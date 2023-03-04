@@ -206,17 +206,17 @@ function SidebarMenu() {
           component="div"
           subheader={
             <ListSubheader component="div" disableSticky>
-              Dashboards
+              Kafka Configuration
             </ListSubheader>
           }
         >
           <SubMenuWrapper>
             <List component="div">
               <ListItem component="div">
-                <NextLink href="/dashboards/tasks" passHref>
+                <NextLink href="/configuration" passHref>
                   <Button
                     className={
-                      currentRoute === '/dashboards/tasks' ? 'active' : ''
+                      currentRoute === '/configuration' ? 'active' : ''
                     }
                     disableRipple
                     component="a"
@@ -224,6 +224,34 @@ function SidebarMenu() {
                     startIcon={<BrightnessLowTwoToneIcon />}
                   >
                     Create Data Pipeline
+                  </Button>
+                </NextLink>
+              </ListItem>
+            </List>
+          </SubMenuWrapper>
+        </List>
+        <List
+          component="div"
+          subheader={
+            <ListSubheader component="div" disableSticky>
+              Metrics Dashboard
+            </ListSubheader>
+          }
+        >
+          <SubMenuWrapper>
+            <List component="div">
+              <ListItem component="div">
+                <NextLink href="/metrics" passHref>
+                  <Button
+                    className={
+                      currentRoute === '/metrics' ? 'active' : ''
+                    }
+                    disableRipple
+                    component="a"
+                    onClick={closeSidebar}
+                    startIcon={<TableChartTwoToneIcon />}
+                  >
+                    Metrics
                   </Button>
                 </NextLink>
               </ListItem>

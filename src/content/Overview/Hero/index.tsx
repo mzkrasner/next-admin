@@ -120,7 +120,7 @@ function Hero() {
           </TypographyH2>
           <Button
             component={Link}
-            href="/dashboards/tasks"
+            href="/configuration"
             size="large"
             variant="contained"
           >
