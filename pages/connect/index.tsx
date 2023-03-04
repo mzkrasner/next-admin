@@ -32,27 +32,18 @@ function Forms() {
   return (
     <>
       <Head>
-        <title>Configure Your Kafka Cluster</title>
+        <title>Connect an Existing Kafka Configuration</title>
       </Head>
       <PageTitleWrapper>
         <PageTitle
-          heading="Configure Your Kafka Cluster"
-          subHeading="Select your preferred number of brokers, zookeepers, data source, data sink, or configure advanced settings."
+          heading="Connect an Existing Kafka Configuration"
+          subHeading="Connect an existing Kafka instance to view health metrics, configure topics and partition settings, and more."
           docs="https://kafka.apache.org/"
         />
       </PageTitleWrapper>
      
           <Grid textAlign='center' item xs={12}>
-            <Button sx={{ margin: 2 }} variant="contained" >
-              Submit
-            </Button>
-            <Card>
-              <Box textAlign='center'>
-                <ExportConfigBtn />
-                
-                </Box>
-           
-            </Card>
+
           </Grid>
     
     </>
