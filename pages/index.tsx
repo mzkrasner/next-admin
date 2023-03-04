@@ -52,14 +52,6 @@ function Overview() {
             >
               <Box />
               <Box>
-                <Button
-                  component={Link}
-                  href="/dashboards/tasks"
-                  variant="contained"
-                  sx={{ ml: 2 }}
-                >
-                  Live Preview
-                </Button>
               </Box>
             </Box>
           </Box>
@@ -67,16 +59,6 @@ function Overview() {
       </HeaderWrapper>
       <Hero />
       <Container maxWidth="lg" sx={{ mt: 8 }}>
-        <Typography textAlign="center" variant="subtitle1">
-          Crafted by{' '}
-          <Link
-            href="https://bloomui.com"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            BloomUI.com
-          </Link>
-        </Typography>
       </Container>
     </OverviewWrapper>
   );

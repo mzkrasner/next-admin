@@ -223,7 +223,7 @@ function SidebarMenu() {
                     onClick={closeSidebar}
                     startIcon={<BrightnessLowTwoToneIcon />}
                   >
-                    Manage Tasks
+                    Create Data Pipeline
                   </Button>
                 </NextLink>
               </ListItem>
