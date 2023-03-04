@@ -4,6 +4,7 @@ import PageTitle from '@/components/PageTitle';
 import { useState, SyntheticEvent } from 'react';
 import defaultCfg from '@/common/kite/constants';
 import PageTitleWrapper from '@/components/PageTitleWrapper';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   Container,
   Grid,
@@ -11,10 +12,13 @@ import {
   CardHeader,
   CardContent,
   Divider,
-  Button
+  Button,
+  AccordionDetails,
+  Accordion,
+  AccordionSummary,
+  Typography,
 } from '@mui/material';
 import Footer from 'src/components/Footer';
-
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
@@ -64,6 +68,12 @@ const DEFAULT_BROKER_PORT = 9091;
 function Forms() {
   const [portsOpen, setPortsOpen] = useState<PortsOpen>({});
   const [kiteConfigRequest, setKiteConfigRequest] = useState(defaultCfg);
+  const [expanded, setExpanded] = useState<string | false>(false);
+
+  const handleChange =
+    (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
+      setExpanded(isExpanded ? panel : false);
+    };
 
   function updateKiteConfigRequest(update: Partial<KiteConfig>): void {
     setKiteConfigRequest((kiteConfigRequest) => {
@@ -391,25 +401,33 @@ function Forms() {
             </Card>
           </Grid>
           <Grid item xs={12}>
-            <Card>
-              <CardHeader title="Advanced Settings" />
-              <Divider />
-              <CardContent>
-                <Box
-                  component="form"
-                  sx={{
-                    '& .MuiTextField-root': { m: 1, width: '43ch' }
-                  }}
-                  noValidate
-                  autoComplete="off"
-                >
-                  {renderAdvanced()}
-                </Box>
-              </CardContent>
-            </Card>
+          <Accordion expanded={expanded === 'panel4'} onChange={handleChange('panel4')}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel4bh-content"
+          id="panel4bh-header"
+        >
+          <Typography sx={{ width: '33%', flexShrink: 0 }}>Advanced Settings</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Card >
+                <Divider />
+                <CardContent>
+                  <Box
+                    component="form"
+                    sx={{
+                      '& .MuiTextField-root': { m: 1, width: '42ch' }
+                    }}
+                    noValidate
+                    autoComplete="off"
+                  >
+                    {renderAdvanced()}
+                  </Box>
+                </CardContent>
+              </Card>
+        </AccordionDetails>
+      </Accordion>
           </Grid>
-          
-          
           <Grid textAlign='center' item xs={12}>
             <Button sx={{ margin: 2 }} variant="contained" onClick={submitHandler}>
               Submit
