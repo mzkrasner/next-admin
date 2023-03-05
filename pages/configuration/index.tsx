@@ -1,10 +1,12 @@
 import Head from 'next/head';
 import SidebarLayout from '@/layouts/SidebarLayout';
 import PageTitle from '@/components/PageTitle';
-import { useState, SyntheticEvent } from 'react';
+import { useState, SyntheticEvent, CSSProperties, useEffect } from 'react';
 import defaultCfg from '@/common/kite/constants';
 import PageTitleWrapper from '@/components/PageTitleWrapper';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import HashLoader from "react-spinners/HashLoader";
+import axios from 'axios';
 import {
   Container,
   Grid,
@@ -23,9 +25,6 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import ExportConfigBtn from '@/content/Dashboards/Tasks/ExportConfigBtn';
-import ShutDownBtn from '@/content/Dashboards/Tasks/ShutdownBtn';
-
-
 
 export interface PortsOpen {
   [index: string]: PortOpen;
@@ -38,6 +37,12 @@ export interface PortOpen {
 export interface CheckPortOpen {
   (index: string, type: string, port: number): Promise<boolean>;
 }
+
+const override: CSSProperties = {
+  display: "block",
+  margin: "0 auto",
+  borderColor: "red",
+};
 
 const dataSources = [
   {
@@ -69,6 +74,31 @@ function Forms() {
   const [portsOpen, setPortsOpen] = useState<PortsOpen>({});
   const [kiteConfigRequest, setKiteConfigRequest] = useState(defaultCfg);
   const [expanded, setExpanded] = useState<string | false>(false);
+  const [loader, setLoader] = useState(0);
+  const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    checkActive();
+  }, []);
+
+  const checkActive = async () => {
+      try {
+        const response = await fetch('http://localhost:3050/d/5nhADrDWk/kafka-metrics?orgId=1&refresh=5s&viewPanel=603&kiosk', {
+          mode: 'no-cors',
+          headers: {
+            'Access-Control-Allow-Origin':'*'
+          }
+        });
+        console.log(response.status, 'this is status')
+        if (response.status === 0) {
+          setActive(1);
+        } else {
+          setActive(0);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+  }
 
   const handleChange =
     (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
@@ -84,9 +114,77 @@ function Forms() {
     });
   }
 
+  const isActive = () => {
+    return (
+      <div className="sweet-loading">
+      <p>You have an active Kite deployment. To start over, select "Disconnect" below.</p>
+      </div>
+    )
+  }
+
+  const isLoading = () => {
+    return (
+      <div className="sweet-loading">
+      <HashLoader
+        color={'#CBB6E6'}
+        cssOverride={override}
+        size={100}
+        aria-label="Loading Spinner"
+        data-testid="loader"
+      />
+      <p>Please stand by while containers are deployed</p>
+      </div>
+    )
+  }
+
+  const queryMetrics = () => {
+    const interval = setInterval(async () => {
+      try {
+        const response = await fetch('http://localhost:3050/d/5nhADrDWk/kafka-metrics?orgId=1&refresh=5s&viewPanel=603&kiosk', {
+          mode: 'no-cors',
+          headers: {
+            'Access-Control-Allow-Origin':'*'
+          }
+        });
+        console.log(response.status, 'this is status')
+        if (response.status === 0) {
+          clearInterval(interval);
+            window.location.href = '/metrics';
+        } 
+      } catch (err) {
+        console.log(err);
+      }
+    }, 1000)
+  }
+
+  function ShutDownBtn() {
+    const [shuttingDown, setShuttingDown] = useState(false);
+  
+    async function disconnectHandler(event: SyntheticEvent): Promise<void> {
+      console.log(event);
+      setShuttingDown(true);
+      console.log('Disconnecting…');
+      try {
+        const response = await axios.delete('/api/kite/shutdown');
+        console.log(response);
+      } catch (error) {
+        console.error('Error occurred during shutdown:', error);
+      }
+      setActive(0);
+    }
+  
+    return (
+      
+        <Button size="large"  variant="outlined" sx={{ margin: 1 }} color="secondary" onClick={disconnectHandler} disabled={shuttingDown}>
+        Disconnect
+        </Button>
+    );
+  }
+
   const checkPortOpen: CheckPortOpen = async (index, type, port) => {
-    console.log({ index, type, port });
+    //console.log({ index, type, port });
     const isOpen = await isPortOpen(port);
+    console.log(portsOpen[`broker-0`], '187')
     setPortsOpen((portsOpen) => ({
       ...portsOpen,
       [index]: {
@@ -94,7 +192,7 @@ function Forms() {
         [type]: isOpen,
       },
     }));
-    console.log(isOpen);
+    //console.log(isOpen);
 
     return isOpen;
   };
@@ -117,7 +215,8 @@ function Forms() {
 
   function submitHandler(event: SyntheticEvent) {
     event.preventDefault();
-
+    setLoader(1);
+    queryMetrics();
     // TODO: Prevent state for deleted brokers from being submitted
     //console.log(kiteConfigRequest)
     console.log('sending configuration…');
@@ -131,12 +230,6 @@ function Forms() {
     })
       .then((response) => {
         console.dir(response);
-
-        setTimeout(() => {
-          // redirect to display page
-          window.location.href = '/display';
-        }, 10000);
-        // setKiteConfigRequest(defaultConfig);
       })
       .catch((error) => {
         console.error(error.message);
@@ -259,9 +352,10 @@ function Forms() {
           }}
           
           error={
-
-              portsOpen[`broker-${i}`['port']]
-
+            portsOpen
+              ? Object.hasOwn(portsOpen, `broker-${i}`)
+              ?  !portsOpen[`broker-${i}`].port : false
+              : false
           }
           
           onBlur={(e) =>
@@ -429,15 +523,16 @@ function Forms() {
       </Accordion>
           </Grid>
           <Grid textAlign='center' item xs={12}>
-            <Button sx={{ margin: 2 }} variant="contained" onClick={submitHandler}>
+            {(active === 1) && isActive()}
+            {(active === 0) && (loader === 0) && <Button sx={{ margin: 2 }} variant="contained" onClick={submitHandler}>
               Submit
-            </Button>
+            </Button>}
+            {(active === 0) && (loader === 1) && isLoading()}
             <Card>
               <Box textAlign='center'>
                 <ExportConfigBtn />
-                <ShutDownBtn />
+                {ShutDownBtn()}
                 </Box>
-           
             </Card>
           </Grid>
         </Grid>

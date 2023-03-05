@@ -1,33 +1,14 @@
 import Head from 'next/head';
 import SidebarLayout from '@/layouts/SidebarLayout';
 import PageTitle from '@/components/PageTitle';
-import { useState, SyntheticEvent } from 'react';
+import { useState } from 'react';
 import defaultCfg from '@/common/kite/constants';
 import PageTitleWrapper from '@/components/PageTitleWrapper';
-import {
-  Container,
-  Grid,
-  Card,
-  CardHeader,
-  CardContent,
-  Divider,
-  Button
-} from '@mui/material';
-import Footer from 'src/components/Footer';
-
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import MenuItem from '@mui/material/MenuItem';
-import ExportConfigBtn from '@/content/Dashboards/Tasks/ExportConfigBtn';
-import ShutDownBtn from '@/content/Dashboards/Tasks/ShutdownBtn';
-
-
+import {Grid} from '@mui/material';
 
 function Forms() {
-  const [portsOpen, setPortsOpen] = useState<PortsOpen>({});
-  const [kiteConfigRequest, setKiteConfigRequest] = useState(defaultCfg);
-
-
+//   const [portsOpen, setPortsOpen] = useState<PortsOpen>({});
+//   const [kiteConfigRequest, setKiteConfigRequest] = useState(defaultCfg);
 
   return (
     <>

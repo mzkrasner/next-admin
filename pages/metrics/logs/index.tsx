@@ -1,20 +1,20 @@
 import Head from 'next/head';
 import SidebarLayout from '@/layouts/SidebarLayout';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useState, useEffect } from 'react';
 import Footer from '@/components/Footer';
 import {
   Grid,
   Tab,
   Tabs,
-  Divider,
   Container,
   Card,
   Box,
-  useTheme,
   styled,
   ListItem
 } from '@mui/material';
+import SocketIOClient from "socket.io-client";
 import PageTitleWrapper from '@/components/PageTitleWrapper';
+
 
 const TabsContainerWrapper = styled(Box)(
   ({ theme }) => `
@@ -99,7 +99,7 @@ const TabsContainerWrapper = styled(Box)(
 );
 
 function DashboardTasks() {
-  const theme = useTheme();
+  //const theme = useTheme();
 
   const [currentTab, setCurrentTab] = useState<string>('analytics');
 
@@ -114,6 +114,28 @@ function DashboardTasks() {
   const handleTabsChange = (_event: ChangeEvent<{}>, value: string): void => {
     setCurrentTab(value);
   };
+
+  useEffect(() => {
+
+    const socket = SocketIOClient.connect(window.location.host, {
+      path: "/api/socket",
+      });
+
+    // log socket connection
+      socket.on("connect", () => {
+      console.log("SOCKET CONNECTED!");
+        
+    });
+
+    // update chat on new message dispatched
+      socket.on("message", (message: string) => {
+      if (message) {
+        console.log(message)
+        }
+    });
+
+
+  }, []);
 
   return (
     <>
@@ -150,74 +172,11 @@ function DashboardTasks() {
               <>
                 <Grid item xs={12} >
                   <Box p={4}>
-                  <Grid container spacing={3} >
-                  <Grid item xs={3}>
-                  <div>
-                    <h3 className='metric-header'>Brokers Online</h3>
-                    <iframe src='http://localhost:3050/d/5nhADrDWk/kafka-metrics?orgId=1&refresh=5s&viewPanel=647&kiosk'></iframe>
-                  </div>
-                  </Grid>
-                  <Grid item xs={3}>
-                  <div>
-                    <h3 className='metric-header'>Active Controllers</h3>
-                    <iframe src='http://localhost:3050/d/5nhADrDWk/kafka-metrics?orgId=1&refresh=5s&viewPanel=233&kiosk'></iframe>
-                  </div>
-                  </Grid>
-                  <Grid item xs={3}>
-                  <div>
-                    <h3 className='metric-header'>Total Topics</h3>
-                    <iframe src='http://localhost:3050/d/5nhADrDWk/kafka-metrics?orgId=1&refresh=5s&viewPanel=625&kiosk'></iframe>
-                  </div>
-                  </Grid>
-                  <Grid item xs={3}>
-                  <div>
-                    <h3 className='metric-header'>Online Partitions</h3>
-                    <iframe src='http://localhost:3050/d/5nhADrDWk/kafka-metrics?orgId=1&refresh=5s&viewPanel=40&kiosk'></iframe>
-                  </div>
-                  </Grid>
-                  </Grid>
-                  </Box>
-                </Grid>
-                <Grid item xs={12}>
-                  <Divider />
-                  <Box
-                    p={4}
-                    sx={{
-                      background: `${theme.colors.alpha.black[5]}`
-                    }}
-                  >
-                    <Grid container spacing={4}>
-                      <Grid item xs={12} sm={6} md={8}>
-                        <Box 
-                         mb={2}
-                         display="flex"
-                         alignItems="center"
-                         justifyContent="center"
-                        >
-                        <div>
-                          <h3 className='metric-header'>Message Throughput</h3>
-                          <iframe
-                            src='http://localhost:3050/d/5nhADrDWk/kafka-metrics?orgId=1&refresh=5s&kiosk&viewPanel=152'
-                            width='800'
-                            height='300'
-                          ></iframe>
-                        </div>
+                  
                         </Box>
                       </Grid>
-                      <Grid item xs={12} sm={6} md={4}>
-                      <div>
-                        <h3 className='metric-header'>Producer Latency</h3>
-                        <iframe
-                          src='http://localhost:3050/d/5nhADrDWk/kafka-metrics?orgId=1&refresh=5s&viewPanel=192&kiosk'
-                          width='400'
-                          height='300'
-                        ></iframe>
-                      </div>
-                      </Grid>
-                    </Grid>
-                  </Box>
-                  <Divider />
-                </Grid>
+                      
+                 
               </>
             )}
             {currentTab === 'taskSearch' && (

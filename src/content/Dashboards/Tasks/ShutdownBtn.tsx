@@ -3,7 +3,8 @@ import axios from 'axios';
 import {Button} from '@mui/material';
 
 interface ShutDownBtnProps {
-  id: string;
+  id?: string;
+  onClick: () => void;
 }
 
 export default function ShutDownBtn({ id }: ShutDownBtnProps) {
